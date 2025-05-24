@@ -1,5 +1,5 @@
 # Expense Tracker (ReactJS)
-## Date:
+## Date:24-05-2025
 
 ## AIM
 To develop a simple Expense Tracker application using React that allows users to manage their personal finances by adding, viewing, and deleting income and expense transactions, while dynamically calculating the current balance, total income, and total expenses.
@@ -82,9 +82,106 @@ Form inputs
 Transaction list (with color coding)
 
 ## PROGRAM
+```
+import React, { useState } from 'react';
+
+export default function ExpenseTracker() {
+  const [transactions, setTransactions] = useState([]);
+  const [description, setDescription] = useState('');
+  const [amount, setAmount] = useState('');
+
+  const handleAddTransaction = (e) => {
+    e.preventDefault();
+    if (!description || isNaN(amount) || amount === 0) return;
+
+    const newTransaction = {
+      id: Date.now(),
+      description,
+      amount: parseFloat(amount)
+    };
+
+    setTransactions([newTransaction, ...transactions]);
+    setDescription('');
+    setAmount('');
+  };
+
+  const handleDelete = (id) => {
+    setTransactions(transactions.filter(tx => tx.id !== id));
+  };
+
+  const total = transactions.reduce((acc, tx) => acc + tx.amount, 0).toFixed(2);
+  const income = transactions
+    .filter(tx => tx.amount > 0)
+    .reduce((acc, tx) => acc + tx.amount, 0).toFixed(2);
+  const expense = transactions
+    .filter(tx => tx.amount < 0)
+    .reduce((acc, tx) => acc + tx.amount, 0).toFixed(2);
+
+  return (
+    <div className="max-w-md mx-auto p-4 bg-white shadow-lg rounded-xl mt-8">
+      <h2 className="text-2xl font-bold mb-4 text-center">Expense Tracker</h2>
+
+      <div className="text-center mb-6">
+        <h3 className="text-xl font-semibold">Balance: ${total}</h3>
+      </div>
+
+      <div className="flex justify-between mb-6">
+        <div className="bg-green-100 text-green-700 p-4 rounded w-1/2 mr-2 text-center">
+          <h4>Income</h4>
+          <p>+${income}</p>
+        </div>
+        <div className="bg-red-100 text-red-700 p-4 rounded w-1/2 ml-2 text-center">
+          <h4>Expense</h4>
+          <p>${Math.abs(expense)}</p>
+        </div>
+      </div>
+
+      <form onSubmit={handleAddTransaction} className="mb-6">
+        <input
+          type="text"
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+          placeholder="Description"
+          className="w-full mb-2 p-2 border rounded"
+        />
+        <input
+          type="number"
+          value={amount}
+          onChange={(e) => setAmount(e.target.value)}
+          placeholder="Amount (+ for income, - for expense)"
+          className="w-full mb-2 p-2 border rounded"
+        />
+        <button className="w-full bg-blue-500 text-white p-2 rounded">Add Transaction</button>
+      </form>
+
+      <h4 className="text-lg font-semibold mb-2">Transactions</h4>
+      <ul>
+        {transactions.map(tx => (
+          <li
+            key={tx.id}
+            className={`flex justify-between items-center p-2 mb-2 border-l-4 ${tx.amount >= 0 ? 'border-green-500' : 'border-red-500'} bg-gray-100 rounded`}
+          >
+            <span>{tx.description}</span>
+            <div className="flex items-center space-x-2">
+              <span className="font-mono">{tx.amount >= 0 ? '+' : ''}${tx.amount.toFixed(2)}</span>
+              <button
+                onClick={() => handleDelete(tx.id)}
+                className="text-red-600 hover:text-red-800"
+              >
+                &#10006;
+              </button>
+            </div>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+```
 
 
 ## OUTPUT
+![Screenshot 2025-05-24 133838](https://github.com/user-attachments/assets/49e17ef3-6bae-4d91-934e-8ee25e465c09)
 
 
 ## RESULT
